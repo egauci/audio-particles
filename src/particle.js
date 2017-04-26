@@ -3,6 +3,8 @@
  * Inspiration: https://github.com/JulianLaval/canvas-particle-network
 */
 
+// original source: https://codepen.io/franky/pen/LGMWPK
+
 // (function() {
 
   import viewport from 'viewport-event';
@@ -69,7 +71,7 @@
 			this.velocity.y = -this.velocity.y;
 		}
 
-    this.radius = vals[this.bucket] / (10 - (this.bucket / 2));
+    this.radius = Math.max(1.5, vals[this.bucket] / (15 - (this.bucket / 2)));
 
 		// Update position
 		this.x += this.velocity.x;
@@ -87,7 +89,7 @@
 
 	var ParticleNetwork = function(parent) {
 		this.options = {
-			velocity: 1.5, // the higher the faster
+			velocity: 1.2, // the higher the faster
 			density: 10000, // the lower the denser
 			netLineDistance: 200,
 			netLineColor: '#929292',
