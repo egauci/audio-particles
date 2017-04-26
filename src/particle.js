@@ -55,7 +55,7 @@
 
   Particle.pIndex = 0;
 
-	Particle.prototype.update = function() {
+	Particle.prototype.update = function(vals) {
 		if (this.opacity < 1) {
 			this.opacity += 0.01;
 		} else {
@@ -68,6 +68,8 @@
 		if (this.y > this.canvas.height + 100 || this.y < -100) {
 			this.velocity.y = -this.velocity.y;
 		}
+
+    this.radius = vals[this.bucket] / (10 - (this.bucket / 2));
 
 		// Update position
 		this.x += this.velocity.x;
@@ -85,8 +87,8 @@
 
 	var ParticleNetwork = function(parent) {
 		this.options = {
-			velocity: 1, // the higher the faster
-			density: 5000, // the lower the denser
+			velocity: 1.5, // the higher the faster
+			density: 10000, // the lower the denser
 			netLineDistance: 200,
 			netLineColor: '#929292',
 			particleColors: [
@@ -111,7 +113,7 @@
 		this.createParticles(true);
 
 		// Update canvas
-		this.animationFrame = requestAnimationFrame(this.update.bind(this));
+		// this.animationFrame = requestAnimationFrame(this.update.bind(this));
 
 		// this.bindUiActions();
 	};
@@ -167,7 +169,7 @@
 	};
   */
 
-	ParticleNetwork.prototype.update = function() {
+	ParticleNetwork.prototype.update = function(vals) {
 		if (this.canvas) {
 
 			this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -205,18 +207,18 @@
 
 			// Draw particles
 			for (var i = 0; i < this.particles.length; i++) {
-				this.particles[i].update();
+				this.particles[i].update(vals);
 				this.particles[i].draw();
 			}
 
-			if (this.options.velocity !== 0) {
-				this.animationFrame = requestAnimationFrame(this.update.bind(this));
-			}
+			// if (this.options.velocity !== 0) {
+			// 	this.animationFrame = requestAnimationFrame(this.update.bind(this));
+			// }
 
 		}
-		else {
-			cancelAnimationFrame(this.animationFrame);
-		}
+		// else {
+		// 	cancelAnimationFrame(this.animationFrame);
+		// }
 	};
 
   /*
@@ -327,5 +329,7 @@
 
 const pna = new ParticleNetworkAnimation();
 pna.init(document.getElementById('pnet'));
+const updatePna = pna.particleNetwork.update.bind(pna.particleNetwork);
+export default updatePna;
 
 // }());
