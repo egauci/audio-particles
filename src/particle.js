@@ -37,11 +37,12 @@
 		this.canvas.height = this.container.offsetHeight;
 	};
 
-	var Particle = function(parent, x, y) {
+	var Particle = function(parent, ix, x, y) {
 		this.network = parent;
 		this.canvas = parent.canvas;
 		this.ctx = parent.ctx;
-		this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
+    this.bucket = ix % 8;
+		this.particleColor = this.network.options.particleColors[this.bucket];
 		this.radius = getLimitedRandom(1.5, 2.5);
 		this.opacity = 0;
 		this.x = x || Math.random() * this.canvas.width;
@@ -51,6 +52,8 @@
 			y: (Math.random() - 0.5) * parent.options.velocity
 		};
 	};
+
+  Particle.pIndex = 0;
 
 	Particle.prototype.update = function() {
 		if (this.opacity < 1) {
@@ -83,10 +86,19 @@
 	var ParticleNetwork = function(parent) {
 		this.options = {
 			velocity: 1, // the higher the faster
-			density: 15000, // the lower the denser
+			density: 5000, // the lower the denser
 			netLineDistance: 200,
 			netLineColor: '#929292',
-			particleColors: ['#aaa'] // ['#6D4E5C', '#aaa', '#FFC458' ]
+			particleColors: [
+        'green',
+        'teal',
+        'blueviolet',
+        'chocolate',
+        'deeppink',
+        'firebrick',
+        'mediumblue',
+        'orangered'
+      ]
 		};
 		this.canvas = parent.canvas;
 		this.ctx = parent.ctx;
@@ -101,7 +113,7 @@
 		// Update canvas
 		this.animationFrame = requestAnimationFrame(this.update.bind(this));
 
-		this.bindUiActions();
+		// this.bindUiActions();
 	};
 
 	ParticleNetwork.prototype.createParticles = function(isInitial) {
@@ -116,22 +128,23 @@
 			this.createIntervalId = setInterval(function() {
 				if (counter < quantity - 1) {
 					// Create particle object
-					this.particles.push(new Particle(this));
+					this.particles.push(new Particle(this, counter));
 				}
 				else {
 					clearInterval(me.createIntervalId);
 				}
 				counter++;
-			}.bind(this), 250);
+			}.bind(this), 50);
 		}
 		else {
 			// Create particle objects
 			for (var i = 0; i < quantity; i++) {
-				this.particles.push(new Particle(this));
+				this.particles.push(new Particle(this, i));
 			}
 		}
 	};
 
+  /*
 	ParticleNetwork.prototype.createInteractionParticle = function() {
 		// Add interaction particle
 		this.interactionParticle = new Particle(this);
@@ -152,6 +165,7 @@
 			this.particles.splice(index, 1);
 		}
 	};
+  */
 
 	ParticleNetwork.prototype.update = function() {
 		if (this.canvas) {
@@ -205,6 +219,7 @@
 		}
 	};
 
+  /*
 	ParticleNetwork.prototype.bindUiActions = function() {
 		// Mouse / touch event handling
 		this.spawnQuantity = 3;
@@ -296,6 +311,7 @@
 			this.canvas.removeEventListener('touchend', this.onTouchEnd);
 		}
 	};
+  */
 
 	var getLimitedRandom = function(min, max, roundToInteger) {
 		var number = Math.random() * (max - min) + min;
@@ -310,7 +326,6 @@
 	};
 
 const pna = new ParticleNetworkAnimation();
-debugger;
 pna.init(document.getElementById('pnet'));
 
 // }());
